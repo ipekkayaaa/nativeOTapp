@@ -13,31 +13,31 @@ export default function EditProfileScreen({ navigation }) {
     medicalCondition: "",
   });
 
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const [chosenDate, setChosenDate] = useState(new Date());
+  const [datePickerVisible, setDatePickerVisible] = useState(false); // State for date picker visibility
+  const [chosenDate, setChosenDate] = useState(new Date()); // State for selected date
 
-  const handleSaveProfile = () => {
-    const userId = "the_user_id"; // Replace with the actual user's ID
-    const userRef = firestore.collection("users").doc(userId);
-  
-    userRef
-      .update({
+  const handleSaveProfile = async () => {
+    try {
+      const userId = "the_user_id"; // Replace with the actual user's ID
+      const userRef = firestore.collection("users").doc(userId);
+
+      // Update the user's profile information in Firestore
+      await userRef.update({
         firstName: values.firstName,
         lastName: values.lastName,
-        birthday: chosenDate,
+        birthday: chosenDate, // Update the chosen date
         phoneNumber: values.phoneNumber,
         weight: values.weight,
         height: values.height,
         medicalCondition: values.medicalCondition,
-      })
-      .then(() => {
-        navigation.goBack(); // Navigate back after a successful update
-      })
-      .catch((error) => {
-        console.error("Error updating profile:", error);
       });
+
+      // After successfully updating the profile, navigate back to the ProfileScreen or any other desired screen.
+      navigation.goBack(); // Assuming you want to navigate back to the previous screen.
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
-  
 
   return (
     <View style={styles.container}>
