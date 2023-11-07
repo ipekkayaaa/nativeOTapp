@@ -1,22 +1,30 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
 import { Button } from "react-native-elements";
-import { auth } from "../../firebase";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import app from "../../firebase";
+
+const auth = getAuth(app); // Initialize Firebase Authentication
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("doctor"); // Default to "doctor"
 
-  const handleSignUp = () => {
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        console.log("Register new user: ", user.email);
-        navigateLogin();
-      })
-      .catch((error) => alert(error.message));
+  const handleSignUp = async () => {
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("Registered new user:", user.email);
+      navigateLogin();
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   const navigateLogin = () => {
@@ -81,7 +89,6 @@ const SignUpScreen = ({ navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

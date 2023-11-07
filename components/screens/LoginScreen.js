@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  TextInput,
-} from "react-native";
+import { StyleSheet, Text, View, TextInput } from "react-native";
 import { Button } from "react-native-elements";
-import { auth } from "../../firebase";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import app from "../../firebase"; 
+
+
+const auth = getAuth(app); // Initialize Firebase Authentication
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(true); // Add a loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Add the onAuthStateChanged listener to check the authentication state
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        // If a user is authenticated, navigate to the HomeScreen or any desired screen
         navigation.navigate("HomeScreen");
       } else {
-        // If there's no authenticated user, set loading to false to render the login page
         setLoading(false);
       }
     });
 
-    // Clean up the subscription when the component unmounts
     return unsubscribe;
   }, [navigation]);
 
@@ -34,20 +28,20 @@ const LoginScreen = ({ navigation }) => {
     navigation.navigate("SignUpScreen");
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       alert("Please enter both email and password.");
       return;
     }
 
-    auth
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
-        const user = userCredentials.user;
-        navigation.navigate("HomeScreen");
-        console.log("Logged in with", user.email);
-      })
-      .catch((error) => alert(error.message));
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+      console.log("Logged in with", user.email);
+      navigation.navigate("HomeScreen");
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   if (loading) {
@@ -77,7 +71,6 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={(text) => setPassword(text)}
         />
       </View>
-
       <View style={styles.buttonContainer}>
         <Button
           containerStyle={styles.button}
@@ -97,7 +90,6 @@ const LoginScreen = ({ navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -110,7 +102,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   inputContainer: {
-    width: "50%",
+    width: "70%",
+    marginBottom: 20,
   },
   input: {
     backgroundColor: "white",
@@ -122,7 +115,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   buttonContainer: {
-    width: "60%",
+    width: "30%",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 40,
@@ -130,7 +123,6 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     borderRadius: 10,
-    alignItems: "center",
   },
   buttonOutline: {
     backgroundColor: "white",

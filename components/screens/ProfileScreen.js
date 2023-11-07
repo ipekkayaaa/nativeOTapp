@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, CheckBox, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
+import { CheckBox } from "@react-native-community/checkbox";
 import { Avatar, Button } from "react-native-elements";
 import { auth } from "../../firebase";
 import EditProfileScreen from "./EditProfileScreen";

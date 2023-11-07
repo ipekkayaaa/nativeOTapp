@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native";
-import { Avatar, Button, SearchBar } from "react-native-elements";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  Modal, // Added to handle the user input form
+} from "react-native";
+import { Avatar, Button, SearchBar, Input } from "react-native-elements"; // Import Input for form input
 import { auth } from "../../firebase";
 import ProfileScreen from "./ProfileScreen";
 
@@ -22,6 +29,28 @@ export default function DoctorProfile({ navigation }) {
 
   const [search, setSearch] = useState("");
   const [filteredUserList, setFilteredUserList] = useState(userList);
+
+  // State for the user input form
+  const [isAddUserModalVisible, setAddUserModalVisible] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", medicalCondition: "", email: "" });
+
+  const openAddUserModal = () => {
+    setAddUserModalVisible(true);
+  };
+
+  const closeAddUserModal = () => {
+    setAddUserModalVisible(false);
+  };
+
+  const addUser = () => {
+    // Validate the new user data, you can add more validation here
+    if (newUser.name && newUser.medicalCondition && newUser.email) {
+      // Add the new user to the user list
+      setUserList([...userList, newUser]);
+      // Close the modal
+      closeAddUserModal();
+    }
+  };
 
   useEffect(() => {
     searchFilterFunction(search);
@@ -64,7 +93,7 @@ export default function DoctorProfile({ navigation }) {
           onPress={() => console.log("Change this picture!")}
         />
 
-         <Button
+        <Button
           type="solid"
           containerStyle={styles.buttonContainer}
           buttonStyle={styles.editProfileButton}
@@ -73,14 +102,23 @@ export default function DoctorProfile({ navigation }) {
           onPress={() => navigation.navigate("EditProfileScreen")}
         />
 
+        {/* Add User Button */}
         <Button
           type="solid"
           containerStyle={styles.buttonContainer}
-          buttonStyle={styles.logOutButton}
+          buttonStyle={styles.addUserButton} // Style for the "Add User" button
           titleStyle={styles.buttonTitle}
-          title="Log Out"
-          onPress={handleSignOut}
+          title="Add User"
+          onPress={openAddUserModal} // Open the user input form
         />
+          <Button
+            type="solid"
+            containerStyle={styles.buttonContainer}
+            buttonStyle={styles.logOutButton}
+            titleStyle={styles.buttonTitle}
+            title="Log Out"
+            onPress={handleSignOut}
+          />
       </View>
 
       <SearchBar
@@ -115,10 +153,33 @@ export default function DoctorProfile({ navigation }) {
           )}
         />
       </View>
+
+      {/* User Input Form Modal */}
+      <Modal visible={isAddUserModalVisible} animationType="slide">
+        <View style={styles.formContainer}>
+          <Text style={styles.formTitle}>Add User</Text>
+          <Input
+            placeholder="Name"
+            onChangeText={(text) => setNewUser({ ...newUser, name: text })}
+            value={newUser.name}
+          />
+          <Input
+            placeholder="Medical Condition"
+            onChangeText={(text) => setNewUser({ ...newUser, medicalCondition: text })}
+            value={newUser.medicalCondition}
+          />
+          <Input
+            placeholder="Email"
+            onChangeText={(text) => setNewUser({ ...newUser, email: text })}
+            value={newUser.email}
+          />
+          <Button title="Add User" onPress={addUser} />
+          <Button title="Cancel" onPress={closeAddUserModal} />
+        </View>
+      </Modal>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -191,5 +252,19 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     fontWeight: "bold",
+  },
+  addUserButton: {
+    backgroundColor: "#ff7f50",
+    borderColor: "#ff7f50",
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
   },
 });

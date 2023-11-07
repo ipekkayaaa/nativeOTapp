@@ -1,10 +1,18 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, Linking } from "react-native";
+import { View, Text, TouchableOpacity, Linking, StyleSheet } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
 function DietScreen({ navigation }) {
+  const goBack = () => {
+    navigation.goBack(); // Navigate back to the previous screen
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={goBack} style={styles.goBackButton}>
+        <Ionicons name="ios-arrow-back" size={24} color="blue" />
+        <Text style={styles.goBackText}>Go Back</Text>
+      </TouchableOpacity>
       <Text style={styles.pageTitle}>Explore Healthy Lifestyle</Text>
       <Text style={styles.pageDescription}>
         Welcome to a journey of self-improvement and well-being! Dive into a treasure trove of resources that will empower you to lead a healthier and more fulfilling life. Here, we have carefully curated an array of valuable content to uplift your mind, body, and spirit. Explore a wealth of articles, delve into transformative diets, and stay updated with the latest health news—all designed to guide you on your path to a happier, healthier you.
@@ -64,6 +72,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333",
+    marginTop: 50,
   },
   pageDescription: {
     fontSize: 16,
@@ -92,6 +101,23 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     marginRight: 10,
   },
+  goBackButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  goBackText: {
+    fontSize: 16,
+    color: "blue",
+    marginLeft: 5,
+  },
+  linksContainer: {
+    marginTop: 50,
+  }
 });
+
 
 export default DietScreen;
