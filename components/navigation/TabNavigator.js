@@ -52,7 +52,7 @@ const HomeTabNavigator = () => {
         options={{ headerShown: false }}
       />
     
-      <Tab.Screen name="Diet" component={DietScreen} />
+      <Tab.Screen name="Healthy Life" component={DietScreen} />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

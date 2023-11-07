@@ -60,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View>
-        <Text style={styles.greeting}>Welcome to Doctor App!</Text>
+        <Text style={styles.greeting}>Welcome to Flexi Truck!</Text>
       </View>
       <View style={styles.inputContainer}>
         <TextInput
