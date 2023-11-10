@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TextInput, CheckBox, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  CheckBox,
+  TouchableOpacity,
+} from "react-native";
 import { Avatar, Button } from "react-native-elements";
 import { auth } from "../../firebase";
 import EditProfileScreen from "./EditProfileScreen";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
+const firestore = getFirestore();
 
 export default function ProfileScreen({ navigation }) {
   const handleSignOut = () => {
@@ -15,15 +24,27 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const [updatedWeeklyData, setUpdatedWeeklyData] = useState([
-    { day: 'Monday', link: '', status: true },
-    { day: 'Tuesday', link: '', status: false },
-    { day: 'Wednesday', link: '', status: true },
-    { day: 'Thursday', link: '', status: false },
-    { day: 'Friday', link: '', status: true },
-    { day: 'Saturday', link: '', status: false },
-    { day: 'Sunday', link: '', status: true },
+    { day: "Monday", link: "", status: true },
+    { day: "Tuesday", link: "", status: false },
+    { day: "Wednesday", link: "", status: true },
+    { day: "Thursday", link: "", status: false },
+    { day: "Friday", link: "", status: true },
+    { day: "Saturday", link: "", status: false },
+    { day: "Sunday", link: "", status: true },
   ]);
-
+  const test = () => {
+    const data = {
+      test: "test",
+    };
+    addDoc(collection(firestore, "weeklyWorkout"), data)
+      .then((docRef) => {
+        console.log("Document written with ID: ", docRef.id);
+      })
+      .catch((e) => {
+        console.error("Error adding document: ", e);
+      });
+  };
+  test();
   const updateTable = () => {
     // Handle the update logic here
     console.log("Updated Weekly Data:", updatedWeeklyData);
@@ -88,7 +109,9 @@ export default function ProfileScreen({ navigation }) {
           <Text style={[styles.tableCell, styles.tableHeader]}>Day</Text>
           <Text style={[styles.tableCell, styles.tableHeader]}>Link</Text>
           <Text style={[styles.tableCell, styles.tableHeader]}>Status</Text>
-          <Text style={[styles.tableCell, styles.tableHeader]}>Update Table</Text>
+          <Text style={[styles.tableCell, styles.tableHeader]}>
+            Update Table
+          </Text>
         </View>
         {updatedWeeklyData.map((rowData, index) => (
           <View style={styles.tableRow} key={index}>
@@ -109,7 +132,10 @@ export default function ProfileScreen({ navigation }) {
               />
             </View>
             <View style={styles.updateButtonContainer}>
-              <TouchableOpacity style={styles.updateButton} onPress={updateTable}>
+              <TouchableOpacity
+                style={styles.updateButton}
+                onPress={updateTable}
+              >
                 <Text style={styles.updateButtonText}>Update</Text>
               </TouchableOpacity>
             </View>
