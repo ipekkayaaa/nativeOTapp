@@ -7,6 +7,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 import EditProfileScreen from "../screens/EditProfileScreen"; 
 import DietScreen from "../screens/DietScreen"; 
 import DoctorProfileScreen from "../screens/DoctorProfileScreen"; 
+import WorkoutScreen from "../screens/WorkoutScreen"; 
 
 
 const Stack = createNativeStackNavigator();
@@ -57,6 +58,13 @@ const StackNavigator = () => {
       <Stack.Screen
         name="DoctorProfileScreen"
         component={DoctorProfileScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="WorkoutScreen"
+        component={WorkoutScreen}
         options={{
           headerShown: false,
         }}

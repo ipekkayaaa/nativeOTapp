@@ -1,19 +1,39 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  CheckBox,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Avatar, Button } from "react-native-elements";
 import { auth } from "../../firebase";
-import EditProfileScreen from "./EditProfileScreen";
-import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { useNavigation } from "@react-navigation/native";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
+
 const firestore = getFirestore();
 
-export default function ProfileScreen({ navigation }) {
+const ProfileScreen = ({ route }) => {
+  const { successMessage } = route.params || {};
+  const [workoutPlanList, setWorkoutPlanList] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchWorkoutPlans = async () => {
+      try {
+        const workoutPlanCollection = collection(firestore, "workoutPlan");
+        const snapshot = await getDocs(workoutPlanCollection);
+        const workoutPlanData = snapshot.docs.map((doc) => {
+          const workoutName = doc.data().workoutName;
+          const workoutDate = doc.data().workoutDate.toDate(); 
+          const status = doc.data().status;
+
+          return { id: doc.id, workoutName, workoutDate, status };
+        });
+
+        setWorkoutPlanList(workoutPlanData);
+      } catch (error) {
+        console.error("Error getting workout plan documents: ", error);
+      }
+    };
+
+    fetchWorkoutPlans();
+  }, []);
+
   const handleSignOut = () => {
     auth
       .signOut()
@@ -21,45 +41,6 @@ export default function ProfileScreen({ navigation }) {
         navigation.navigate("LoginScreen");
       })
       .catch((err) => alert(err.message));
-  };
-
-  const [updatedWeeklyData, setUpdatedWeeklyData] = useState([
-    { day: "Monday", link: "", status: true },
-    { day: "Tuesday", link: "", status: false },
-    { day: "Wednesday", link: "", status: true },
-    { day: "Thursday", link: "", status: false },
-    { day: "Friday", link: "", status: true },
-    { day: "Saturday", link: "", status: false },
-    { day: "Sunday", link: "", status: true },
-  ]);
-  const test = () => {
-    const data = {
-      test: "test",
-    };
-    addDoc(collection(firestore, "weeklyWorkout"), data)
-      .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-      })
-      .catch((e) => {
-        console.error("Error adding document: ", e);
-      });
-  };
-  test();
-  const updateTable = () => {
-    // Handle the update logic here
-    console.log("Updated Weekly Data:", updatedWeeklyData);
-  };
-
-  const handleLinkChange = (index, link) => {
-    const updatedData = [...updatedWeeklyData];
-    updatedData[index].link = link;
-    setUpdatedWeeklyData(updatedData);
-  };
-
-  const handleStatusChange = (index) => {
-    const updatedData = [...updatedWeeklyData];
-    updatedData[index].status = !updatedData[index].status;
-    setUpdatedWeeklyData(updatedData);
   };
 
   return (
@@ -106,46 +87,31 @@ export default function ProfileScreen({ navigation }) {
 
       <View style={styles.tableContainer}>
         <View style={styles.tableRow}>
-          <Text style={[styles.tableCell, styles.tableHeader]}>Day</Text>
-          <Text style={[styles.tableCell, styles.tableHeader]}>Link</Text>
+          <Text style={[styles.tableCell, styles.tableHeader]}>Workout Name</Text>
+          <Text style={[styles.tableCell, styles.tableHeader]}>Workout Date</Text>
           <Text style={[styles.tableCell, styles.tableHeader]}>Status</Text>
-          <Text style={[styles.tableCell, styles.tableHeader]}>
-            Update Table
-          </Text>
+          <Text style={[styles.tableCell, styles.tableHeader]}>Update</Text>
         </View>
-        {updatedWeeklyData.map((rowData, index) => (
-          <View style={styles.tableRow} key={index}>
-            <Text style={styles.tableCell}>{rowData.day}</Text>
-            <View style={styles.linkInputContainer}>
-              <TextInput
-                style={styles.linkInput}
-                value={rowData.link}
-                onChangeText={(link) => handleLinkChange(index, link)}
-                placeholder="Please enter workout link"
-                textAlign="left"
-              />
-            </View>
-            <View style={styles.checkboxContainer}>
-              <CheckBox
-                value={rowData.status}
-                onValueChange={() => handleStatusChange(index)}
-              />
-            </View>
-            <View style={styles.updateButtonContainer}>
-              <TouchableOpacity
-                style={styles.updateButton}
-                onPress={updateTable}
-              >
-                <Text style={styles.updateButtonText}>Update</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        {workoutPlanList.map((rowData) => (
+          <TouchableOpacity
+            key={rowData.id}
+            style={styles.tableRow}
+            onPress={() => navigation.navigate("WorkoutScreen", { workoutId: rowData.id })}
+          >
+            <Text style={[styles.tableCell, styles.linkTitle]}>{rowData.workoutName}</Text>
+            <Text style={styles.tableCell}>
+              {rowData.workoutDate instanceof Date ? rowData.workoutDate.toLocaleDateString() : ""}
+            </Text>
+            <Text style={styles.tableCell}>{rowData.status ? "Completed" : "Not Completed"}</Text>
+            <TouchableOpacity style={styles.updateButton} onPress={() => console.log("Update")}>
+              <Text style={styles.updateButtonText}>Update</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
   );
-}
-
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -211,23 +177,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginLeft: 120,
   },
-  linkInputContainer: {
-    flex: 2,
-    borderColor: "#ccc",
-    borderWidth: 1,
-  },
-  linkInput: {
-    padding: 5,
-  },
-  checkboxContainer: {
-    flex: 1,
-    alignItems: "flex-start",
-    marginLeft: 60,
-  },
-  updateButtonContainer: {
-    flex: 1,
-    alignItems: "center",
-  },
   updateButton: {
     backgroundColor: "#3498db",
     padding: 5,
@@ -238,4 +187,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
   },
+  linkTitle: {
+    fontSize: 16,
+    color: "blue",
+    textDecorationLine: "underline",
+    marginRight: 10,
+  },
+
 });
+
+export default ProfileScreen;

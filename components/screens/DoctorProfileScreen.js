@@ -5,11 +5,19 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
-  Modal, // Added to handle the user input form
+  Picker,
+  Modal,
+  ScrollView,
 } from "react-native";
-import { Avatar, Button, SearchBar, Input } from "react-native-elements"; // Import Input for form input
+import { Avatar, Button, SearchBar, Input } from "react-native-elements";
 import { auth } from "../../firebase";
-import ProfileScreen from "./ProfileScreen";
+
+const initialExercises = [
+  { name: "", sets: "", reps: "" },
+  { name: "", sets: "", reps: "" },
+  { name: "", sets: "", reps: "" },
+  { name: "", sets: "", reps: "" },
+];
 
 export default function DoctorProfile({ navigation }) {
   const handleSignOut = () => {
@@ -30,7 +38,6 @@ export default function DoctorProfile({ navigation }) {
   const [search, setSearch] = useState("");
   const [filteredUserList, setFilteredUserList] = useState(userList);
 
-  // State for the user input form
   const [isAddUserModalVisible, setAddUserModalVisible] = useState(false);
   const [newUser, setNewUser] = useState({ name: "", medicalCondition: "", email: "" });
 
@@ -43,12 +50,31 @@ export default function DoctorProfile({ navigation }) {
   };
 
   const addUser = () => {
-    // Validate the new user data, you can add more validation here
     if (newUser.name && newUser.medicalCondition && newUser.email) {
-      // Add the new user to the user list
       setUserList([...userList, newUser]);
-      // Close the modal
       closeAddUserModal();
+    }
+  };
+
+  const [isCreateWorkoutModalVisible, setCreateWorkoutModalVisible] = useState(false);
+  const [newWorkout, setNewWorkout] = useState({
+    workoutName: "",
+    date: "",
+    exercises: [...initialExercises],
+  });
+
+  const openCreateWorkoutModal = () => {
+    setCreateWorkoutModalVisible(true);
+  };
+
+  const closeCreateWorkoutModal = () => {
+    setCreateWorkoutModalVisible(false);
+  };
+
+  const createWorkout = () => {
+    if (newWorkout.workoutName && newWorkout.date) {
+      console.log("New Workout:", newWorkout);
+      closeCreateWorkoutModal();
     }
   };
 
@@ -102,23 +128,23 @@ export default function DoctorProfile({ navigation }) {
           onPress={() => navigation.navigate("EditProfileScreen")}
         />
 
-        {/* Add User Button */}
         <Button
           type="solid"
           containerStyle={styles.buttonContainer}
-          buttonStyle={styles.addUserButton} // Style for the "Add User" button
+          buttonStyle={styles.createWorkoutButton}
           titleStyle={styles.buttonTitle}
-          title="Add User"
-          onPress={openAddUserModal} // Open the user input form
+          title="Workout"
+          onPress={openCreateWorkoutModal}
         />
-          <Button
-            type="solid"
-            containerStyle={styles.buttonContainer}
-            buttonStyle={styles.logOutButton}
-            titleStyle={styles.buttonTitle}
-            title="Log Out"
-            onPress={handleSignOut}
-          />
+
+        <Button
+          type="solid"
+          containerStyle={styles.buttonContainer}
+          buttonStyle={styles.logOutButton}
+          titleStyle={styles.buttonTitle}
+          title="Log Out"
+          onPress={handleSignOut}
+        />
       </View>
 
       <SearchBar
@@ -131,7 +157,6 @@ export default function DoctorProfile({ navigation }) {
         onClear={() => searchFilterFunction("")}
         value={search}
       />
-
       <View style={styles.tableContainer}>
         <View style={styles.tableRow}>
           <Text style={[styles.tableCell, styles.tableHeader]}>User Name</Text>
@@ -154,27 +179,231 @@ export default function DoctorProfile({ navigation }) {
         />
       </View>
 
-      {/* User Input Form Modal */}
-      <Modal visible={isAddUserModalVisible} animationType="slide">
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Add User</Text>
-          <Input
-            placeholder="Name"
-            onChangeText={(text) => setNewUser({ ...newUser, name: text })}
-            value={newUser.name}
-          />
-          <Input
-            placeholder="Medical Condition"
-            onChangeText={(text) => setNewUser({ ...newUser, medicalCondition: text })}
-            value={newUser.medicalCondition}
-          />
-          <Input
-            placeholder="Email"
-            onChangeText={(text) => setNewUser({ ...newUser, email: text })}
-            value={newUser.email}
-          />
-          <Button title="Add User" onPress={addUser} />
-          <Button title="Cancel" onPress={closeAddUserModal} />
+      <Modal
+        visible={isCreateWorkoutModalVisible}
+        animationType="slide"
+        transparent={true}
+      >
+        <View style={styles.modalContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.formContainer}>
+              <Text style={styles.formTitle}>Create Workout</Text>
+              <Input
+                placeholder="Workout Name"
+                onChangeText={(text) => setNewWorkout({ ...newWorkout, workoutName: text })}
+                value={newWorkout.workoutName}
+              />
+              <Input
+                placeholder="Date"
+                onChangeText={(text) => setNewWorkout({ ...newWorkout, date: text })}
+                value={newWorkout.date}
+              />
+              <View style={styles.exercisesContainer}>
+                {/* Exercise 1 */}
+                <View style={styles.exerciseContainer}>
+                  <Text style={styles.formSubtitle}>Exercise 1</Text>
+                  <Input
+                    placeholder="Exercise Name"
+                    onChangeText={(text) =>
+                      setNewWorkout((prev) => {
+                        const updatedExercises = [...prev.exercises];
+                        updatedExercises[0].name = text;
+                        return { ...prev, exercises: updatedExercises };
+                      })
+                    }
+                    value={newWorkout.exercises[0].name}
+                  />
+
+                  <Text>Sets</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[0].sets}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[0].sets = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={i + 1} />
+                    ))}
+                  </Picker>
+
+                  <Text>Reps</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[0].reps}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[0].reps = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={(i + 1).toString()} />
+                    ))}
+                  </Picker>
+                </View>
+
+                {/* Exercise 2 */}
+                <View style={styles.exerciseContainer}>
+                  <Text style={styles.formSubtitle}>Exercise 2</Text>
+                  <Input
+                    placeholder="Exercise Name"
+                    onChangeText={(text) =>
+                      setNewWorkout((prev) => {
+                        const updatedExercises = [...prev.exercises];
+                        updatedExercises[1].name = text;
+                        return { ...prev, exercises: updatedExercises };
+                      })
+                    }
+                    value={newWorkout.exercises[1].name}
+                  />
+
+                  <Text>Sets</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[1].sets}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[1].sets = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={i + 1} />
+                    ))}
+                  </Picker>
+
+                  <Text>Reps</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[1].reps}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[1].reps = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={(i + 1).toString()} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+
+              <View style={styles.exercisesContainer}>
+                {/* Exercise 3 */}
+                <View style={styles.exerciseContainer}>
+                  <Text style={styles.formSubtitle}>Exercise 3</Text>
+                  <Input
+                    placeholder="Exercise Name"
+                    onChangeText={(text) =>
+                      setNewWorkout((prev) => {
+                        const updatedExercises = [...prev.exercises];
+                        updatedExercises[2].name = text;
+                        return { ...prev, exercises: updatedExercises };
+                      })
+                    }
+                    value={newWorkout.exercises[2].name}
+                  />
+
+                  <Text>Sets</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[2].sets}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[2].sets = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={i + 1} />
+                    ))}
+                  </Picker>
+
+                  <Text>Reps</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[2].reps}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[2].reps = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={(i + 1).toString()} />
+                    ))}
+                  </Picker>
+                </View>
+
+                {/* Exercise 4 */}
+                <View style={styles.exerciseContainer}>
+                  <Text style={styles.formSubtitle}>Exercise 4</Text>
+                  <Input
+                    placeholder="Exercise Name"
+                    onChangeText={(text) =>
+                      setNewWorkout((prev) => {
+                        const updatedExercises = [...prev.exercises];
+                        updatedExercises[3].name = text;
+                        return { ...prev, exercises: updatedExercises };
+                      })
+                    }
+                    value={newWorkout.exercises[3].name}
+                  />
+
+                  <Text>Sets</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[3].sets}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[3].sets = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={i + 1} />
+                    ))}
+                  </Picker>
+
+                  <Text>Reps</Text>
+                  <Picker
+                    selectedValue={newWorkout.exercises[3].reps}
+                    onValueChange={(value) =>
+                      setNewWorkout((prevWorkout) => {
+                        const updatedExercises = [...prevWorkout.exercises];
+                        updatedExercises[3].reps = value;
+                        return { ...prevWorkout, exercises: updatedExercises };
+                      })
+                    }
+                  >
+                    {Array.from({ length: 20 }, (_, i) => (
+                      <Picker.Item key={i} label={(i + 1).toString()} value={(i + 1).toString()} />
+                    ))}
+                  </Picker>
+                </View>
+              </View>
+              <Button
+                buttonStyle={[styles.submitWorkout, { width: 150 }]} 
+                title="Submit Workout"
+                onPress={createWorkout}
+              />
+              <Button
+               buttonStyle={[styles.cancelWorkout, { width: 150 }]} 
+               title="Cancel" 
+               onPress={closeCreateWorkoutModal} />
+            </View>
+          </ScrollView>
         </View>
       </Modal>
     </View>
@@ -258,13 +487,72 @@ const styles = StyleSheet.create({
     borderColor: "#ff7f50",
   },
   formContainer: {
+    display: "block",
+    height: 600,
+    width: 700,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    marginTop: 30,
+  },
+  formTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#3498db",
+    marginLeft: 250,
+  },
+  createWorkoutButton: {
+    backgroundColor: "#3498db",
+    borderColor: "#3498db",
+    marginTop: 20,
+  },
+  formSubtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 20,
+    color: "#2ecc71",
+  },
+  setRepContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  setRepDropdown: {
+    flex: 1,
+    backgroundColor: "#ecf0f1",
+    marginHorizontal: 5,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
+  scrollContainer: {
+    flexGrow: 1,
   },
+  exerciseContainer: {
+    width: '50%', 
+    paddingHorizontal: 10,
+  },
+  exercisesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  submitWorkout: {
+    marginTop: 20,
+    marginLeft: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cancelWorkout: {
+    marginTop: 10,
+    marginLeft: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
