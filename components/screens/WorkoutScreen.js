@@ -89,16 +89,23 @@ const WorkoutScreen = ({ route }) => {
             const setKey = `set${exerciseNumber}`;
             const repKey = `rep${exerciseNumber}`;
 
+            const exerciseName = value.name;  // Use the name property if it exists
+            const exerciseSets = workoutDetails[setKey];
+            const exerciseReps = workoutDetails[repKey];
+
             return (
               <View style={styles.tableRow} key={key}>
-                <Text style={styles.tableCell}>{value}</Text>
-                <Text style={styles.tableCell}>{workoutDetails[setKey]}</Text>
-                <Text style={styles.tableCell}>{workoutDetails[repKey]}</Text>
+                <Text style={styles.tableCell}>{exerciseName}</Text>
+                <Text style={styles.tableCell}>{exerciseSets}</Text>
+                <Text style={styles.tableCell}>{exerciseReps}</Text>
               </View>
             );
           }
           return null;
         })}
+
+
+
       </View>
     </View>
   );
