@@ -4,11 +4,11 @@ import LoginScreen from "../screens/LoginScreen";
 import HomeTabNavigator from "./TabNavigator";
 import ProfileScreen from "../screens/ProfileScreen";
 import SignUpScreen from "../screens/SignUpScreen";
-import EditProfileScreen from "../screens/EditProfileScreen"; 
-import DietScreen from "../screens/DietScreen"; 
-import DoctorProfileScreen from "../screens/DoctorProfileScreen"; 
-import WorkoutScreen from "../screens/WorkoutScreen"; 
-
+import EditProfileScreen from "../screens/EditProfileScreen";
+import DietScreen from "../screens/DietScreen";
+import DoctorProfileScreen from "../screens/DoctorProfileScreen";
+import WorkoutScreen from "../screens/WorkoutScreen";
+import InformationForm from "../screens/InformationForm";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,14 +41,14 @@ const StackNavigator = () => {
           headerShown: false,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="EditProfileScreen"
         component={EditProfileScreen}
         options={{
           headerShown: false,
         }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="DietScreen"
         component={DietScreen}
         options={{
@@ -58,6 +58,13 @@ const StackNavigator = () => {
       <Stack.Screen
         name="DoctorProfileScreen"
         component={DoctorProfileScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="InformationForm"
+        component={InformationForm}
         options={{
           headerShown: false,
         }}

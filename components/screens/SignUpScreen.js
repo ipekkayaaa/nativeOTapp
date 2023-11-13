@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { Button } from "react-native-elements";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import app from "../../firebase";
@@ -18,7 +24,11 @@ const SignUpScreen = ({ navigation }) => {
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
       console.log("Registered new user:", user.email);
       navigateLogin();
@@ -28,7 +38,7 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const navigateLogin = () => {
-    navigation.navigate("LoginScreen");
+    navigation.navigate("InformationForm");
   };
 
   return (
@@ -55,13 +65,21 @@ const SignUpScreen = ({ navigation }) => {
       <View style={styles.radioContainer}>
         <Text style={styles.radioLabel}>Select User Type:</Text>
         <TouchableOpacity
-          style={userType === "doctor" ? styles.radioButtonSelected : styles.radioButton}
+          style={
+            userType === "doctor"
+              ? styles.radioButtonSelected
+              : styles.radioButton
+          }
           onPress={() => setUserType("doctor")}
         >
           <Text style={styles.radioText}>Doctor</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={userType === "patient" ? styles.radioButtonSelected : styles.radioButton}
+          style={
+            userType === "patient"
+              ? styles.radioButtonSelected
+              : styles.radioButton
+          }
           onPress={() => setUserType("patient")}
         >
           <Text style={styles.radioText}>Patient</Text>
