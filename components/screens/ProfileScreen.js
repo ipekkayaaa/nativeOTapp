@@ -19,18 +19,19 @@ const ProfileScreen = ({ route }) => {
         const snapshot = await getDocs(workoutPlanCollection);
         const workoutPlanData = snapshot.docs.map((doc) => {
           const workoutName = doc.data().workoutName;
-          const workoutDate = doc.data().workoutDate.toDate(); 
+          const workoutDate = doc.data().workoutDate; 
           const status = doc.data().status;
-
+    
           return { id: doc.id, workoutName, workoutDate, status };
         });
-
+    
         setWorkoutPlanList(workoutPlanData);
       } catch (error) {
         console.error("Error getting workout plan documents: ", error);
       }
     };
-
+  
+  
     fetchWorkoutPlans();
   }, []);
 
