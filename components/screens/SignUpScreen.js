@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,10 +7,22 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Button } from "react-native-elements";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  firestore,
+} from "firebase/auth";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 import app from "../../firebase";
 
 const auth = getAuth(app); // Initialize Firebase Authentication
+const db = getFirestore();
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -31,6 +43,24 @@ const SignUpScreen = ({ navigation }) => {
       );
       const user = userCredential.user;
       console.log("Registered new user:", user.email);
+      if (userType === "doctor") {
+        // Save doctor data to the "therapists" collection
+        const coltherapist = collection(db, 'therapist');
+        await addDoc(coltherapist, {
+          email: email,
+        });
+
+        console.log("Added document for doctor:", user.email);
+        // Navigate to home screen for doctors
+        navigation.navigate("HomeScreen");
+      } else {
+        // Navigate to information screen for patients
+        const colpatient = collection(db, 'patients');
+        await addDoc(colpatient, {
+          email: email,
+        });
+        navigation.navigate("InformationForm");
+      }
       navigateLogin();
     } catch (error) {
       alert(error.message);
@@ -38,7 +68,7 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const navigateLogin = () => {
-    navigation.navigate("InformationForm");
+    navigation.navigate("LoginScreen");
   };
 
   return (
