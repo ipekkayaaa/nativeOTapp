@@ -1,3 +1,4 @@
+// DoctorFormScreen.js
 import React, { useState } from "react";
 import { View, TextInput, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
@@ -5,8 +6,8 @@ import { addDoc, collection } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-const PatientFormScreen = ({ navigation, route }) => {
-  const auth = getAuth();
+const DoctorFormScreen = ({ navigation, route }) => {
+    const auth = getAuth();
   const user = auth.currentUser;
   const email = user.email;
   console.log(email);
@@ -15,25 +16,22 @@ const PatientFormScreen = ({ navigation, route }) => {
     lastName: "",
     birthday: "",
     phoneNumber: "",
-    weight: "",
-    height: "",
-    medicalCondition: "",
-    email: email, // Accessing the passed userEmail parameter
+    organization: "",
+    email: email,
   });
 
   const handleSaveForm = async () => {
-    const colRefPatients = collection(firestore, 'patients');
+    const colRefTherapist = collection(firestore, 'therapist');
 
     try {
-      await addDoc(colRefPatients, {
+      await addDoc(colRefTherapist, {
         ...values,
       });
 
-      console.log("Patient data added successfully!");
-
+      console.log("Doctor data added successfully!");
       navigation.navigate('LoginScreen');
     } catch (error) {
-      console.error("Error adding patient data: ", error);
+      console.error("Error adding doctor data: ", error);
     }
   };
 
@@ -64,22 +62,10 @@ const PatientFormScreen = ({ navigation, route }) => {
         onChangeText={(text) => setValues({ ...values, phoneNumber: text })}
       />
       <TextInput
-        placeholder="Weight"
+        placeholder="Organization"
         style={styles.input}
-        value={values.weight}
-        onChangeText={(text) => setValues({ ...values, weight: text })}
-      />
-      <TextInput
-        placeholder="Height"
-        style={styles.input}
-        value={values.height}
-        onChangeText={(text) => setValues({ ...values, height: text })}
-      />
-      <TextInput
-        placeholder="Medical Condition"
-        style={styles.input}
-        value={values.medicalCondition}
-        onChangeText={(text) => setValues({ ...values, medicalCondition: text })}
+        value={values.organization}
+        onChangeText={(text) => setValues({ ...values, organization: text })}
       />
 
       <Button
@@ -128,4 +114,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PatientFormScreen;
+export default DoctorFormScreen;

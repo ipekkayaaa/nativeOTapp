@@ -20,6 +20,8 @@ import {
   collection,
 } from "firebase/firestore";
 import app from "../../firebase";
+import DocotorFormScreen from "../screens/DoctorFormScreen";
+
 
 const auth = getAuth(app); // Initialize Firebase Authentication
 const db = getFirestore();
@@ -45,23 +47,13 @@ const SignUpScreen = ({ navigation }) => {
       console.log("Registered new user:", user.email);
       if (userType === "doctor") {
         // Save doctor data to the "therapists" collection
-        const coltherapist = collection(db, 'therapist');
-        await addDoc(coltherapist, {
-          email: email,
-        });
-
         console.log("Added document for doctor:", user.email);
         // Navigate to home screen for doctors
-        navigation.navigate("HomeScreen");
+        navigation.navigate("DoctorFormScreen");
       } else {
         // Navigate to information screen for patients
-        const colpatient = collection(db, 'patients');
-        await addDoc(colpatient, {
-          email: email,
-        });
         navigation.navigate("InformationForm");
       }
-      navigateLogin();
     } catch (error) {
       alert(error.message);
     }
@@ -70,6 +62,12 @@ const SignUpScreen = ({ navigation }) => {
   const navigateLogin = () => {
     navigation.navigate("LoginScreen");
   };
+  const combinedfunction = () => {
+    handleSignUp();
+    navigateLogin();
+  };
+
+  
 
   return (
     <View style={styles.container}>
@@ -120,7 +118,7 @@ const SignUpScreen = ({ navigation }) => {
         <Button
           containerStyle={styles.button}
           buttonStyle={[styles.button, styles.buttonOutline]}
-          onPress={handleSignUp}
+          onPress={combinedfunction}
           title="Register"
           titleStyle={styles.buttonOutlineText}
         />

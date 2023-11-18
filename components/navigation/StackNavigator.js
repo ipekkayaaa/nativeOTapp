@@ -9,6 +9,7 @@ import DietScreen from "../screens/DietScreen";
 import DoctorProfileScreen from "../screens/DoctorProfileScreen";
 import WorkoutScreen from "../screens/WorkoutScreen";
 import InformationForm from "../screens/InformationForm";
+import DocotorFormScreen from "../screens/DoctorFormScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +73,13 @@ const StackNavigator = () => {
       <Stack.Screen
         name="WorkoutScreen"
         component={WorkoutScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="DoctorFormScreen"
+        component={DocotorFormScreen}
         options={{
           headerShown: false,
         }}

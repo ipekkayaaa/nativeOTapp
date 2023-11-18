@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -21,6 +21,8 @@ import {
   where,
   getDocs,
   length,
+  get,
+  async,
 } from "firebase/firestore";
 import app from "../../firebase";
 
@@ -42,46 +44,48 @@ const HomeStackNavigator = () => {
     </Stack.Navigator>
   );
 };
-const decideprofile = () => {
+const decideprofile = async () => {
   const user = auth.currentUser;
   const patientsCollection = collection(db, "patients");
   const therapistCollection = collection(db, "therapist"); // Corrected collection name
-  let decider = 0;
-
-  try {
     const patientQuery = query(patientsCollection, where("email", "==", user.email));
-    const patientQuerySnapshot = getDocs(patientQuery);
-    console.log(patientQuerySnapshot);
+    const patientQuerySnapshot = await getDocs(patientQuery);
     if (patientQuerySnapshot.docs && patientQuerySnapshot.docs.length > 0) {
       // User found in the "patients" collection
       console.log('User found in the "patients" collection');
-      return decider;
+      return 0;
     } else {
       // User not found in the "patients" collection, check "therapists" collection
       const therapistQuery = query(therapistCollection, where("email", "==", user.email));
-      const therapistQuerySnapshot = getDocs(therapistQuery);
+      const therapistQuerySnapshot = await getDocs(therapistQuery);
 
       if (therapistQuerySnapshot.docs && therapistQuerySnapshot.docs.length > 0) {
         // User found in the "therapists" collection
-        decider = 1;
         console.log('User found in the "therapists" collection');
-        return decider;
+        return 1;
       } else {
         // User not found in either collection
         console.log('User not found in both "patients" and "therapists" collections');
-        return decider;
       }
     }
-  } catch (error) {
-    console.error('Error in decideprofile:', error);
-    // Handle the error as needed
-    throw error;
-  }
-}
+} 
 
 const HomeTabNavigator = () => {
-  console.log(decideprofile());
-  if(decideprofile() == 0){
+  const [userType, setUserType] = useState();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await decideprofile();
+        setUserType(result);
+      } catch (error) {
+        console.error('Error in HomeTabNavigator:', error);
+        // Handle the error as needed
+      }
+    };
+
+    fetchData();
+  }, []);
+  if(userType == 0){
     console.log('we did it boys');
     return (
       <Tab.Navigator
@@ -125,7 +129,8 @@ const HomeTabNavigator = () => {
       
     </Tab.Navigator>
     );
-  }else if(decideprofile() == 1){
+  }else if(userType == 1){
+    console.log('This function runs');
     return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
