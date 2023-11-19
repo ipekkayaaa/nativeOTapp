@@ -1,22 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, Picker } from "react-native";
 import { Avatar, Button } from "react-native-elements";
-import { auth, storage, firestore } from "../../firebase";
+import { auth, firestore } from "../../firebase";
 import { useNavigation } from "@react-navigation/native";
-import { collection, getDocs, where, query, doc, updateDoc } from "firebase/firestore";
-import ImagePicker from 'react-native-image-picker';
+import {
+  collection,
+  getDocs,
+  where,
+  query,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 
-const ProfileScreen = ({ route }) => {
-  const { successMessage } = route.params || {};
+const UserProfile = ({ route }) => {
+  const { user } = route.params || {};
   const [workoutPlanList, setWorkoutPlanList] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("Not Completed");
-  const [profileImage, setProfileImage] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
     const fetchWorkoutPlans = async () => {
       try {
-        const userEmail = auth.currentUser?.email;
+        const userEmail = user.email;
 
         if (userEmail) {
           const workoutPlanCollection = collection(firestore, "workoutPlan");
@@ -39,16 +44,7 @@ const ProfileScreen = ({ route }) => {
     };
 
     fetchWorkoutPlans();
-  }, []);
-
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        navigation.navigate("LoginScreen");
-      })
-      .catch((err) => alert(err.message));
-  };
+  }, [user]);
 
   const handleStatusChange = async (workoutId) => {
     try {
@@ -66,82 +62,21 @@ const ProfileScreen = ({ route }) => {
     }
   };
 
-  const handleChangePicture = () => {
-    ImagePicker.showImagePicker({ title: 'Select Profile Picture' }, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = { uri: response.uri };
-        setProfileImage(source);
-
-        const userId = auth.currentUser?.uid;
-        const storageRef = storage.ref(`profilePictures/${userId}`);
-        storageRef.putFile(response.path)
-          .then((snapshot) => {
-            console.log('Uploaded a blob or file!', snapshot.metadata);
-            // Update the user's profile picture URL in Firestore
-            const userRef = doc(firestore, "users", userId);
-            updateDoc(userRef, { profilePicture: snapshot.metadata.fullPath });
-          })
-          .catch((error) => {
-            console.error('Error uploading image:', error);
-          });
-      }
-    });
+  const handleClose = () => {
+    // Add logic to close the UserProfile screen
+    navigation.goBack(); // This assumes you are using a stack navigator
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleChangePicture}>
-          {profileImage ? (
-            <Avatar
-              rounded
-              size={120}
-              source={{ uri: profileImage.uri }}
-              activeOpacity={0.7}
-            />
-          ) : (
-            <Avatar
-              rounded
-              size={120}
-              icon={{ name: "person", type: "material" }}
-              activeOpacity={0.7}
-            />
-          )}
-        </TouchableOpacity>
-        <Text style={styles.emailText}>{auth.currentUser?.email}</Text>
-      </View>
-
-      <View style={styles.buttonsContainer}>
-        <Button
-          type="solid"
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.changePictureButton}
-          titleStyle={styles.buttonTitle}
-          title="Change Picture"
-          onPress={handleChangePicture}
+        <Avatar
+          rounded
+          size={120}
+          icon={{ name: "person", type: "material" }}
+          activeOpacity={0.7}
         />
-
-        <Button
-          type="solid"
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.editProfileButton}
-          titleStyle={styles.buttonTitle}
-          title="Edit Profile"
-          onPress={() => navigation.navigate("EditProfileScreen")}
-        />
-
-        <Button
-          type="solid"
-          containerStyle={styles.buttonContainer}
-          buttonStyle={styles.logOutButton}
-          titleStyle={styles.buttonTitle}
-          title="Log Out"
-          onPress={handleSignOut}
-        />
+        <Text style={styles.emailText}>{user.email}</Text>
       </View>
 
       <View style={styles.tableContainer}>
@@ -151,6 +86,7 @@ const ProfileScreen = ({ route }) => {
           <Text style={[styles.tableCell, styles.tableHeader]}>Status</Text>
           <Text style={[styles.tableCell, styles.tableHeader]}>Update</Text>
         </View>
+
         {workoutPlanList.map((rowData) => (
           <View key={rowData.id} style={styles.tableRow}>
             <TouchableOpacity
@@ -190,6 +126,10 @@ const ProfileScreen = ({ route }) => {
           </View>
         ))}
       </View>
+
+      <TouchableOpacity onPress={handleClose} style={styles.closeButtonContainer}>
+        <Text style={styles.closeButton}>Close</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -211,36 +151,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#333333",
   },
-  buttonsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-    width: "80%",
-  },
-  buttonContainer: {
-    flex: 1,
-  },
-  buttonTitle: {
-    fontSize: 16,
-  },
-  changePictureButton: {
-    backgroundColor: "#4CAF50",
-    borderColor: "#4CAF50",
-  },
-  editProfileButton: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
-  },
-  logOutButton: {
-    backgroundColor: "#F44336",
-    borderColor: "#F44336",
-  },
   tableContainer: {
-    backgroundColor: "#FFFFFF",
     width: "80%",
-    padding: 10,
+    backgroundColor: "#FFFFFF",
     borderRadius: 10,
     elevation: 5,
+    padding: 10,
+    marginTop: 20,
   },
   tableRow: {
     flexDirection: "row",
@@ -248,7 +165,6 @@ const styles = StyleSheet.create({
     borderColor: "#CCCCCC",
     alignItems: "center",
     marginVertical: 10,
-    
   },
   tableCell: {
     flex: 1,
@@ -256,22 +172,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333333",
   },
-  
   tableHeader: {
     fontWeight: "bold",
     color: "#333333",
   },
-  updateButton: {
-    backgroundColor: "#4CAF50",
-    padding: 5,
-    borderRadius: 5,
-    marginTop: 2,
-    marginRight: 200,
-    
+
+  closeButtonContainer: {
+    position: "absolute",
+    top: 20,
+    right: 20,
   },
-  updateButtonText: {
-    color: "#FFFFFF",
-    textAlign: "center",
+  closeButton: {
+    fontSize: 16,
+    color: "blue",
   },
   linkTitle: {
     fontSize: 16,
@@ -290,9 +203,20 @@ const styles = StyleSheet.create({
   statusPicker: {
     width: 120,
   },
+  updateButton: {
+    backgroundColor: "#4CAF50",
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 2,
+    marginRight: 200,
+  },
+  updateButtonText: {
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
   workoutDateCell: {
     marginLeft: 20, // Adjust the margin as needed
   },
 });
 
-export default ProfileScreen;
+export default UserProfile;

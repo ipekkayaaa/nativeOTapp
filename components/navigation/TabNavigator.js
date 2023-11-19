@@ -25,6 +25,7 @@ import {
   async,
 } from "firebase/firestore";
 import app from "../../firebase";
+import OrganizationListScreen from "../screens/OrganizationListScreen";
 
 const auth = getAuth(app); // Initialize Firebase Authentication
 const db = getFirestore();
@@ -70,7 +71,6 @@ const decideprofile = async () => {
     }
 } 
 
-<<<<<<< Updated upstream
 const HomeTabNavigator = () => {
   const [userType, setUserType] = useState();
   useEffect(() => {
@@ -83,19 +83,10 @@ const HomeTabNavigator = () => {
         // Handle the error as needed
       }
     };
-=======
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
->>>>>>> Stashed changes
 
     fetchData();
   }, []);
   if(userType == 0){
-    console.log('we did it boys');
     return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -106,9 +97,9 @@ const TabNavigator = () => {
             iconName = "md-home-outline";
         
             } else if (route.name === "Diet") {
-            iconName = "md-restaurant-outline";
+            iconName = "fitness-outline";
             } else if (route.name === "Profile") {
-            iconName = "md-person-outline";
+            iconName = "person-circle-outline";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -121,17 +112,24 @@ const TabNavigator = () => {
         <Tab.Screen
           name="Home"
           component={HomeStackNavigator}
-          options={{ headerShown: false }}
+          options={{ 
+            headerShown: false, 
+            tabBarStyle: {
+              backgroundColor: 'green ',
+            },
+          }}
         />
     
         <Tab.Screen name="Healthy Life" component={DietScreen} />
         <Tab.Screen
-          name="Profile"
-          component={ProfileScreen}
+          name="HealthyLife"
+          component={DietScreen}
           options={{
-            headerShown: true,
-            headerTitle: "Personal Infomation",
+            headerShown: false,
             headerTitleAlign: "center",
+            tabBarStyle: {
+              backgroundColor: 'green',
+            },
           }}
         />
 
@@ -139,7 +137,6 @@ const TabNavigator = () => {
     </Tab.Navigator>
     );
   }else if(userType == 1){
-    console.log('This function runs');
     return (
       <Tab.Navigator
         screenOptions={({ route }) => ({
@@ -148,34 +145,40 @@ const TabNavigator = () => {
 
             if (route.name === "Home") {
             iconName = "md-home-outline";
-        
             } else if (route.name === "Diet") {
-            iconName = "md-restaurant-outline";
+            iconName = "fitness-outline";
             } else if (route.name === "Profile") {
-            iconName = "md-person-outline";
+            iconName = "person-circle-outline";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: "#216afc",
-          tabBarInactiveTintColor: "gray",
+          tabBarActiveTintColor: "white",
+          tabBarInactiveTintColor: "white",
           headerShown: false,
         })}
       >
         <Tab.Screen
           name="Home"
           component={HomeStackNavigator}
-          options={{ headerShown: false }}
+          options={{ 
+            headerShown: false,
+            tabBarStyle: {
+              backgroundColor: '#5f9ea0',
+            },
+          }}
         />
     
-        <Tab.Screen name="Healthy Life" component={DietScreen} />
+        <Tab.Screen name="Organizaitons" component={OrganizationListScreen} />
         <Tab.Screen
         name="DoctorProfile"
         component={DoctorProfileScreen}
         options={{
-          headerShown: true,
-          headerTitle: "Personal Infomation",
+          headerShown: false,
           headerTitleAlign: "center",
+          tabBarStyle: {
+            backgroundColor: '#5f9ea0',
+          },
         }}
       />
     </Tab.Navigator>
@@ -183,102 +186,6 @@ const TabNavigator = () => {
   }
 };
 
-export default TabNavigator;
+export default HomeTabNavigator;
 
-
-
-
-
-
-
-
-
-
-
-
-// import React from "react";
-// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import Ionicons from "react-native-vector-icons/Ionicons";
-// import DietScreen from "../screens/DietScreen";
-// import HomeScreen from "../screens/HomeScreen";
-// import ProfileScreen from "../screens/ProfileScreen";
-// import DoctorProfileScreen from "../screens/DoctorProfileScreen";
-
-// const Tab = createBottomTabNavigator();
-// const Stack = createNativeStackNavigator();
-
-// const HomeStackNavigator = () => {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Screen
-//         name="HomeStack"
-//         component={HomeScreen}
-//         options={{ headerShown: false }}
-//       />
-//     </Stack.Navigator>
-//   );
-// };
-
-// const TabNavigator = ({ route }) => {
-
- 
-
-//   return (
-//     <Tab.Navigator
-//       screenOptions={({ route }) => ({
-//         tabBarIcon: ({ focused, color, size }) => {
-//           let iconName;
-
-//           if (route.name === "Home") {
-//             iconName = "md-home-outline";
-//           } else if (route.name === "Diet") {
-//             iconName = "md-restaurant-outline";
-//           } else if (route.name === "Profile") {
-//             iconName = "md-person-outline";
-//           }
-
-//           return <Ionicons name={iconName} size={size} color={color} />;
-//         },
-//         tabBarActiveTintColor: "#216afc",
-//         tabBarInactiveTintColor: "gray",
-//         headerShown: false,
-//       })}
-//     >
-//       <Tab.Screen
-//         name="Home"
-//         component={HomeStackNavigator}
-//         options={{ headerShown: false }}
-//       />
-    
-//       <Tab.Screen name="Healthy Life" component={DietScreen} />
-
-//       {userType === "patient" ? (
-//         <Tab.Screen
-//           name="Profile"
-//           component={ProfileScreen}
-//           options={{
-//             headerShown: true,
-//             headerTitle: "Personal Information",
-//             headerTitleAlign: "center",
-//           }}
-//         />
-//       ) : null}
-
-//       {userType === "doctor" ? (
-//         <Tab.Screen
-//           name="DoctorProfile"
-//           component={DoctorProfileScreen}
-//           options={{
-//             headerShown: true,
-//             headerTitle: "Personal Information",
-//             headerTitleAlign: "center",
-//           }}
-//         />
-//       ) : null}
-//     </Tab.Navigator>
-//   );
-// };
-
-// export default TabNavigator;
 

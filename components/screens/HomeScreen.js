@@ -8,85 +8,33 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { SearchBar } from "react-native-elements";
+import { Avatar } from "react-native-elements";
 import Headline from "../subcomponents/Headline";
-import CategoryList from "../subcomponents/CategoryList";
-import Card from "../subcomponents/Card";
+import { auth } from "../../firebase";
 import QuickRoute from "../subcomponents/QuickRoute";
-import doctors from "../consts/Doctor";
+
 import pageImages from "../consts/PageImages";
 
 export default function HomeScreen({ navigation }) {
-  const [search, setSearch] = useState("");
-  const [filteredDataSource, setFilteredDataSource] = useState(doctors);
-  const [masterDataSource, setMasterDataSource] = useState(doctors);
-
-  const searchFilterFunction = (text) => {
-    if (text) {
-      const newData = masterDataSource.filter(function (item) {
-        const itemData = `${item.firstname} ${item.lastname}`
-          ? `${item.firstname} ${item.lastname}`.toUpperCase()
-          : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setFilteredDataSource(newData);
-      setSearch(text);
-    } else {
-      setFilteredDataSource(masterDataSource);
-      setSearch(text);
-    }
-  };
-
-  const [activeCardIndex, setActiveCardIndex] = useState(0);
-
+  
   const { width } = Dimensions.get("screen");
   const cardWidth = width / 1.9;
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.header2}>
+        <Avatar
+          rounded
+          size={120}
+          icon={{ name: "person", type: "material" }}
+          avatarStyle={styles.avatarStyle}
+          activeOpacity={0.7}
+        />
+        <Text style={styles.emailText}>{auth.currentUser?.email}</Text>
+      </View>
       <Headline />
-
-      <View style={styles.header}>
-        <Text style={styles.textHeader}>Find your doctor here</Text>
-      </View>
-
-      <SearchBar
-        round
-        searchIcon={{ size: 26 }}
-        containerStyle={styles.searchContainer}
-        inputContainerStyle={styles.searchInputContainer}
-        placeholder="Type your doctor's name"
-        onChangeText={(text) => searchFilterFunction(text)}
-        onClear={() => searchFilterFunction("")}
-        value={search}
-      />
-
-      <FlatList
-        onMomentumScrollEnd={(e) => {
-          setActiveCardIndex(
-            Math.round(e.nativeEvent.contentOffset.x / cardWidth)
-          );
-        }}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={filteredDataSource}
-        contentContainerStyle={{ paddingVertical: 10, paddingLeft: 10 }}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity
-            disabled={activeCardIndex != index}
-            activeOpacity={1}
-            onPress={() => navigation.navigate("ProfileScreen", item)}
-          >
-            <Card doctor={item} index={index} />
-          </TouchableOpacity>
-        )}
-      />
-
-      <View style={styles.headerQuickAcess}>
-        <Text style={styles.textHeaderQuickAccess}>Quick Access</Text>
-      </View>
-
+     
+      
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -144,5 +92,19 @@ const styles = StyleSheet.create({
   textHeaderQuickAccess: {
     fontSize: 26,
     fontWeight: "bold",
+  },
+  header2: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  avatarStyle: {
+    borderWidth: 2,
+    borderColor: "#fff",
+    backgroundColor: "#3498db",
+  },
+  emailText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 10,
   },
 });

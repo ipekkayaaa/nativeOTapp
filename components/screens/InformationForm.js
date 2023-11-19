@@ -5,7 +5,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import { getAuth } from "firebase/auth";
 
-const DoctorFormScreen = ({ navigation, route }) => {
+const PatientFormScreen = ({ navigation, route }) => {
   const auth = getAuth();
   const user = auth.currentUser;
   const email = user.email;
@@ -15,7 +15,9 @@ const DoctorFormScreen = ({ navigation, route }) => {
     lastName: "",
     birthday: "",
     phoneNumber: "",
-    organization: "",
+    weight: "",
+    height: "",
+    medicalCondition: "",
     email: email,
   });
 
@@ -26,29 +28,31 @@ const DoctorFormScreen = ({ navigation, route }) => {
       !values.lastName ||
       !values.birthday ||
       !values.phoneNumber ||
-      !values.organization
-    ){
+      !values.weight ||
+      !values.height ||
+      !values.medicalCondition
+    ) {
       alert("Please fill out all the fields before submitting your registration.");
       return;
     }
 
-    const colRefTherapist = collection(firestore, "therapist");
+    const colRefPatients = collection(firestore, "patients");
 
     try {
-      await addDoc(colRefTherapist, {
+      await addDoc(colRefPatients, {
         ...values,
       });
 
-      console.log("Doctor data added successfully!");
+      console.log("Patient data added successfully!");
       navigation.navigate("LoginScreen");
     } catch (error) {
-      console.error("Error adding doctor data: ", error);
+      alert("Error adding patient data: " + error.message);
     }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.headline}>Please fill out the form to complete your registration.</Text>
+
       <TextInput
         placeholder="First Name"
         style={styles.input}
@@ -74,10 +78,24 @@ const DoctorFormScreen = ({ navigation, route }) => {
         onChangeText={(text) => setValues({ ...values, phoneNumber: text })}
       />
       <TextInput
-        placeholder="Organization"
+        placeholder="Weight"
         style={styles.input}
-        value={values.organization}
-        onChangeText={(text) => setValues({ ...values, organization: text })}
+        value={values.weight}
+        onChangeText={(text) => setValues({ ...values, weight: text })}
+      />
+      <TextInput
+        placeholder="Height"
+        style={styles.input}
+        value={values.height}
+        onChangeText={(text) => setValues({ ...values, height: text })}
+      />
+      <TextInput
+        placeholder="Medical Condition"
+        style={styles.input}
+        value={values.medicalCondition}
+        onChangeText={(text) =>
+          setValues({ ...values, medicalCondition: text })
+        }
       />
 
       <Button
@@ -96,6 +114,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "white",
   },
   headline: {
     fontSize: 18,
@@ -110,7 +129,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderColor: "green",
     borderWidth: 1,
-    width: 800,
+    width: "80%", // Adjust the width as needed
   },
   button: {
     width: "50%",
@@ -131,4 +150,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default DoctorFormScreen;
+export default PatientFormScreen;

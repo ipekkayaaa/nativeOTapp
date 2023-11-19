@@ -13,6 +13,7 @@ import {
 import { Avatar, Button, SearchBar, Input } from "react-native-elements";
 import { auth, firestore } from "../../firebase";
 import { getDocs, addDoc, collection } from "firebase/firestore";
+import UserProfile from "./UserProfile"; 
 
 const initialExercises = [
   { name: "", sets: "", reps: "" },
@@ -68,9 +69,6 @@ export default function DoctorProfile({ navigation }) {
     }
   };
   
-  
-  
-
   const [patientList, setPatientList] = useState([]);
   const [selectedPatientId, setSelectedPatientId] = useState("");
   useEffect(() => {
@@ -99,16 +97,14 @@ export default function DoctorProfile({ navigation }) {
   }, []);
 
   const [search, setSearch] = useState("");
-  // const [filteredUserList, setFilteredUserList] = useState(userList);
   const [filteredUserList, setFilteredUserList] = useState(patientList);
 
   useEffect(() => {
     setFilteredUserList(patientList);
   }, [patientList]);
-  
 
   const navigateToUserProfile = (user) => {
-    navigation.navigate("ProfileScreen", { user });
+    navigation.navigate("UserProfile", { user });
   };
 
   const searchFilterFunction = (text) => {
@@ -128,10 +124,9 @@ export default function DoctorProfile({ navigation }) {
   const closeCreateWorkoutModal = () => {
     setCreateWorkoutModalVisible(false);
   };
-
+  
   return (
     <View style={styles.container}>
-      {/* <ScrollView  contentContainerStyle={styles.scrollContainer2}> */}
         <View style={styles.header}>
           <Avatar
             rounded
@@ -212,7 +207,6 @@ export default function DoctorProfile({ navigation }) {
             )}
           />
         </View>
-      {/* </ScrollView> */}
 
       <Modal
         visible={createWorkoutModalVisible}
@@ -502,25 +496,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   changePictureButton: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#778899",
     borderColor: "#3498db",
+    marginRight: 5,
   },
   editProfileButton: {
-    backgroundColor: "#27ae60",
+    backgroundColor: "#8fbc8f",
     borderColor: "#27ae60",
+    marginLeft: 5,
+    marginRight: 5,
   },
   logOutButton: {
     backgroundColor: "#e74c3c",
     borderColor: "#e74c3c",
+    marginLeft: 5,
   },
   searchContainer: {
     width: "80%",
-    marginBottom: 10,
+    marginBottom: 5,
+    paddingBottom: 0,
   },
   searchInputContainer: {
     backgroundColor: "#fff",
-    borderBottomWidth: 0,
-    borderTopWidth: 0,
+    height: 40,
+    marginBottom: 10,
   },
   tableContainer: {
     backgroundColor: "#fff",
@@ -563,8 +562,10 @@ const styles = StyleSheet.create({
     marginLeft: 250,
   },
   createWorkoutButton: {
-    backgroundColor: "#3498db",
+    backgroundColor: "#b0c4de",
     borderColor: "#3498db",
+    marginLeft: 5,
+    marginRight: 5,
   },
   formSubtitle: {
     fontSize: 18,
