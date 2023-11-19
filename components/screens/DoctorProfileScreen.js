@@ -44,10 +44,11 @@ export default function DoctorProfile({ navigation }) {
   const createWorkout = () => {
     if (newWorkout.workoutName && newWorkout.date && selectedPatientId) {
       const colRefworkout = collection(firestore, 'workoutPlan');
+  
       addDoc(colRefworkout, {
         workoutName: newWorkout.workoutName,
         workoutDate: newWorkout.date,
-        email: selectedPatientId,
+        email: selectedPatientId, // Use selectedPatientId directly as email
         exercises: newWorkout.exercises.map((exercise, index) => ({
           name: exercise.name,
           reps: exercise.reps,
@@ -66,6 +67,8 @@ export default function DoctorProfile({ navigation }) {
       console.warn("Incomplete workout data. Please fill in all required fields.");
     }
   };
+  
+  
   
 
   const [patientList, setPatientList] = useState([]);
@@ -233,15 +236,16 @@ export default function DoctorProfile({ navigation }) {
                 onChangeText={(text) => setNewWorkout({ ...newWorkout, date: text })}
                 value={newWorkout.date}
               />
-              <Picker
+             <Picker
                 selectedValue={selectedPatientId}
                 onValueChange={(value) => setSelectedPatientId(value)}
               >
                 <Picker.Item label="Select Patient" value="" />
                 {patientList.map((patient) => (
-                  <Picker.Item key={patient.id} label={patient.email} value={patient.id} />
+                  <Picker.Item key={patient.id} label={patient.email} value={patient.email} />
                 ))}
               </Picker>
+
               <View style={styles.exercisesContainer}>
                   {/* Exercise 1 */}
                   <View style={styles.exerciseContainer}>

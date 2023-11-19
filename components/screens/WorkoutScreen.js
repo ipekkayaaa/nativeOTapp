@@ -83,29 +83,13 @@ const WorkoutScreen = ({ route }) => {
           <Text style={styles.tableCellHeader}>Set</Text>
           <Text style={styles.tableCellHeader}>Rep</Text>
         </View>
-        {Object.entries(workoutDetails).map(([key, value]) => {
-          if (key.startsWith("exercise")) {
-            const exerciseNumber = key.replace("exercise", "");
-            const setKey = `set${exerciseNumber}`;
-            const repKey = `rep${exerciseNumber}`;
-
-            const exerciseName = value.name;  // Use the name property if it exists
-            const exerciseSets = workoutDetails[setKey];
-            const exerciseReps = workoutDetails[repKey];
-
-            return (
-              <View style={styles.tableRow} key={key}>
-                <Text style={styles.tableCell}>{exerciseName}</Text>
-                <Text style={styles.tableCell}>{exerciseSets}</Text>
-                <Text style={styles.tableCell}>{exerciseReps}</Text>
-              </View>
-            );
-          }
-          return null;
-        })}
-
-
-
+        {workoutDetails.exercises.map((exercise, index) => (
+          <View style={styles.tableRow} key={index}>
+            <Text style={styles.tableCell}>{exercise.name}</Text>
+            <Text style={styles.tableCell}>{exercise.sets}</Text>
+            <Text style={styles.tableCell}>{exercise.reps}</Text>
+          </View>
+        ))}
       </View>
     </View>
   );
