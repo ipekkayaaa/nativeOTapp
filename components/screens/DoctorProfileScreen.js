@@ -156,7 +156,7 @@ export default function DoctorProfile({ navigation }) {
             buttonStyle={styles.editProfileButton}
             titleStyle={styles.buttonTitle}
             title="Edit Profile"
-            onPress={() => navigation.navigate("EditProfileScreen")}
+            onPress={() => navigation.navigate("EditDoctorProfileScreen")}
           />
 
           <Button
