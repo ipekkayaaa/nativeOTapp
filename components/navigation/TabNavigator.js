@@ -118,8 +118,17 @@ const HomeTabNavigator = () => {
             },
           }}
         />
-    
-        <Tab.Screen name="Organizaitons" component={OrganizationListScreen} />
+
+        <Tab.Screen name="Organizaitons"
+          component={OrganizationListScreen} 
+          options={{
+            headerShown: false,
+            headerTitleAlign: "center",
+            tabBarStyle: {
+              backgroundColor: '#5f9ea0',
+            },
+          }}
+        />
         <Tab.Screen
           name="Profile"
           component={ProfileScreen}
@@ -146,7 +155,7 @@ const HomeTabNavigator = () => {
             iconName = "md-home-outline";
             } else if (route.name === "Organizaitons") {
             iconName = "fitness-outline";
-            } else if (route.name === "DoctorProfile") {
+            } else if (route.name === "Therapist Profile") {
             iconName = "person-circle-outline";
             }
 
@@ -181,7 +190,7 @@ const HomeTabNavigator = () => {
          
         />
         <Tab.Screen
-        name="DoctorProfile"
+        name="Therapist Profile"
         component={DoctorProfileScreen}
         options={{
           headerShown: false,

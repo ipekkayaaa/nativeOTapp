@@ -628,8 +628,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   logOutButton: {
-    backgroundColor: "#778899",
-    borderColor: "#778899",
+    backgroundColor: "#cd5c5c",
+    borderColor: "#3498db",
     marginLeft: 5,
   },
   searchContainer: {
