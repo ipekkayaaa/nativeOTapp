@@ -94,7 +94,7 @@ export default function EditProfileScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Edit Your Profile</Text>
+      <Text style={styles.headline}>Edit Your Profile</Text>
       <TextInput
         name="firstName"
         style={styles.input}
@@ -158,7 +158,6 @@ export default function EditProfileScreen({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -167,38 +166,42 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     padding: 20,
   },
-  heading: {
+  headline: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
   },
   input: {
-    width: "100%",
+    width: "80%",
     height: 40,
     borderColor: "#C5C2B7",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
+    backgroundColor: "#fff",
   },
   button: {
-    backgroundColor: "#38362d",
+    backgroundColor: "#7DCEA0",
     justifyContent: "center",
     alignItems: "center",
-    width: "40%",
+    width: "30%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    borderColor: "#DAF7A6",
+    borderWidth: 2,
   },
   cancelButton: {
-    backgroundColor: "#999",
+    backgroundColor: "#808080",
     justifyContent: "center",
     alignItems: "center",
     width: "40%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    width: "30%",
   },
   buttonText: {
     color: "#fff",

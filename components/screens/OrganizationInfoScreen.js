@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, ScrollView } from "react-native";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { SearchBar } from "react-native-elements";
-import { collection, getDocs, where, query } from "firebase/firestore";
+import { collection, getDocs, where, query, onSnapshot } from "firebase/firestore";
 import { firestore } from "../../firebase";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
 
 export default function OrganizationInfoScreen({ route }) {
   const { organizationId } = route.params;
@@ -13,30 +15,35 @@ export default function OrganizationInfoScreen({ route }) {
   useEffect(() => {
     const fetchTherapists = async () => {
       try {
-        const therapistsCollection = collection(firestore, "therapists");
-        const q = query(therapistsCollection, where("organizationId", "==", organizationId));
+        console.log("Fetching therapists for organizationId:", organizationId);
+        const therapistsCollection = collection(firestore, "therapist");
+        const q = query(therapistsCollection, where("organization", "==", organizationId));
 
-        const snapshot = await getDocs(q);
-        const therapistData = snapshot.docs.map((doc) => {
-          const {
-            firstName,
-            lastName,
-            email,
-            title,
-            phoneNumber,
-          } = doc.data();
-          return {
-            id: doc.id,
-            firstName,
-            lastName,
-            email,
-            title,
-            phoneNumber,
-          };
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const therapistData = snapshot.docs.map((doc) => {
+            const {
+              firstName,
+              lastName,
+              email,
+              title,
+              phoneNumber,
+            } = doc.data();
+            return {
+              id: doc.id,
+              firstName,
+              lastName,
+              email,
+              title,
+              phoneNumber,
+            };
+          });
+          console.log("Therapist Data:", therapistData);
+
+          setTherapistList(therapistData);
+          setFilteredDataSource(therapistData);
         });
 
-        setTherapistList(therapistData);
-        setFilteredDataSource(therapistData);
+        return () => unsubscribe();
       } catch (error) {
         console.error("Error getting therapists: ", error);
       }
@@ -58,10 +65,19 @@ export default function OrganizationInfoScreen({ route }) {
       setFilteredDataSource(therapistList);
       setSearch(text);
     }
+    
+  };
+  const navigation = useNavigation();
+  const goBack = () => {
+    navigation.goBack(); 
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+       <TouchableOpacity onPress={goBack} style={styles.goBackButton}>
+        <Ionicons name="ios-arrow-back" size={24} color="blue" />
+        <Text style={styles.goBackText}>Go Back</Text>
+      </TouchableOpacity>
       <Text style={styles.textHeader}>Therapists</Text>
       <SearchBar
         round
@@ -94,7 +110,6 @@ export default function OrganizationInfoScreen({ route }) {
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -140,5 +155,18 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     height: 40,
     marginBottom: 10,
+  },
+  goBackButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  goBackText: {
+    fontSize: 16,
+    color: "blue",
+    marginLeft: 5,
   },
 });

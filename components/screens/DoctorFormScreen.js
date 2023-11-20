@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { View, TextInput, Text, StyleSheet, Alert } from "react-native";
+
+import React, { useState, useEffect } from "react";
+import { View, TextInput, Text, StyleSheet, Alert, Picker } from "react-native";
 import { Button } from "react-native-elements";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs } from "firebase/firestore";
 import { firestore } from "../../firebase";
 import { getAuth } from "firebase/auth";
 
@@ -13,11 +14,33 @@ const DoctorFormScreen = ({ navigation, route }) => {
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
+    title: "",
     birthday: "",
     phoneNumber: "",
     organization: "",
     email: email,
   });
+
+  const [organizationList, setOrganizationList] = useState([]);
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const organizationsCollection = collection(firestore, "organizations");
+        const snapshot = await getDocs(organizationsCollection);
+        const organizationsData = snapshot.docs.map((doc) => {
+          const { organizationName } = doc.data();
+          return { id: doc.id, organizationName };
+        });
+
+        setOrganizationList(organizationsData);
+      } catch (error) {
+        console.error("Error getting organizations: ", error);
+      }
+    };
+
+    fetchOrganizations();
+  }, []);
 
   const handleSaveForm = async () => {
     // Validate input
@@ -27,7 +50,7 @@ const DoctorFormScreen = ({ navigation, route }) => {
       !values.birthday ||
       !values.phoneNumber ||
       !values.organization
-    ){
+    ) {
       alert("Please fill out all the fields before submitting your registration.");
       return;
     }
@@ -35,8 +58,11 @@ const DoctorFormScreen = ({ navigation, route }) => {
     const colRefTherapist = collection(firestore, "therapist");
 
     try {
+      // Add the doctor data with the organization ID
       await addDoc(colRefTherapist, {
         ...values,
+        // Store the organization ID instead of the organization name
+        organization: values.organization,
       });
 
       console.log("Doctor data added successfully!");
@@ -48,7 +74,9 @@ const DoctorFormScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headline}>Please fill out the form to complete your registration.</Text>
+      <Text style={styles.headline}>
+        Please fill out the form to complete your registration.
+      </Text>
       <TextInput
         placeholder="First Name"
         style={styles.input}
@@ -60,6 +88,12 @@ const DoctorFormScreen = ({ navigation, route }) => {
         style={styles.input}
         value={values.lastName}
         onChangeText={(text) => setValues({ ...values, lastName: text })}
+      />
+      <TextInput 
+        placeholder="Title"
+        style={styles.input}
+        value={values.title}
+        onChangeText={(text) => setValues({ ...values, title: text })}
       />
       <TextInput
         placeholder="Birthday"
@@ -73,13 +107,16 @@ const DoctorFormScreen = ({ navigation, route }) => {
         value={values.phoneNumber}
         onChangeText={(text) => setValues({ ...values, phoneNumber: text })}
       />
-      <TextInput
-        placeholder="Organization"
+      <Picker
+        selectedValue={values.organization}
+        onValueChange={(value) => setValues({ ...values, organization: value })}
         style={styles.input}
-        value={values.organization}
-        onChangeText={(text) => setValues({ ...values, organization: text })}
-      />
-
+      >
+        <Picker.Item label="Select Organization" value="" />
+        {organizationList.map((org) => (
+          <Picker.Item key={org.id} label={org.organizationName} value={org.id} />
+        ))}
+      </Picker>
       <Button
         containerStyle={styles.button}
         buttonStyle={[styles.button, styles.buttonOutline]}

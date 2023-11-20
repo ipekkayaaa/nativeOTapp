@@ -124,6 +124,46 @@ export default function DoctorProfile({ navigation }) {
   const closeCreateWorkoutModal = () => {
     setCreateWorkoutModalVisible(false);
   };
+
+  const [createOrganizationModalVisible, setCreateOrganizationModalVisible] = useState(false);
+  const [newOrganization, setNewOrganization] = useState({
+    organizationName: "",
+    street: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    phoneNumber: "",
+    email: "",
+  });
+
+  const openCreateOrganizationModal = () => {
+    setCreateOrganizationModalVisible(true);
+  };
+
+  const closeCreateOrganizationModal = () => {
+    setCreateOrganizationModalVisible(false);
+  };
+
+  const createOrganization = async () => {
+    try {
+      const organizationsCollection = collection(firestore, "organizations");
+
+      await addDoc(organizationsCollection, {
+        organizationName: newOrganization.organizationName,
+        street: newOrganization.street,
+        city: newOrganization.city,
+        state: newOrganization.state,
+        zipCode: newOrganization.zipCode,
+        phoneNumber: newOrganization.phoneNumber,
+        email: newOrganization.email,
+      });
+
+      console.log("Organization added successfully!");
+      closeCreateOrganizationModal();
+    } catch (error) {
+      console.error("Error adding organization: ", error);
+    }
+  };
   
   return (
     <View style={styles.container}>
@@ -164,6 +204,14 @@ export default function DoctorProfile({ navigation }) {
             titleStyle={styles.buttonTitle}
             title="Workout"
             onPress={openCreateWorkoutModal}
+          />
+          <Button
+            type="solid"
+            containerStyle={styles.buttonContainer}
+            buttonStyle={styles.createOrganizationButton} 
+            titleStyle={styles.buttonTitle}
+            title="Create Organization"
+            onPress={openCreateOrganizationModal}
           />
 
           <Button
@@ -440,7 +488,7 @@ export default function DoctorProfile({ navigation }) {
                   </View>
                 </View>
               <Button
-                buttonStyle={[styles.submitWorkout, { width: 150 }]} 
+                buttonStyle={[styles.submitWorkout, { width: 150,}]} 
                 title="Submit Workout"
                 onPress={createWorkout}
               />
@@ -448,6 +496,79 @@ export default function DoctorProfile({ navigation }) {
                 buttonStyle={[styles.cancelWorkout, { width: 150 }]} 
                 title="Cancel"
                 onPress={closeCreateWorkoutModal}
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+      <Modal
+        visible={createOrganizationModalVisible}
+        animationType="slide"
+        transparent={true}
+        style={styles.modalContainer}
+      >
+        <View style={styles.modalContainer}>
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.formContainer}>
+              <Text style={styles.headline}>Create Organization</Text>
+              <Input
+                name="organizationName"
+                placeholder="Organization Name"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, organizationName: text })}
+                value={newOrganization.organizationName}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="street"
+                placeholder="Street"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, street: text })}
+                value={newOrganization.street}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="city"
+                placeholder="City"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, city: text })}
+                value={newOrganization.city}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="state"
+                placeholder="State"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, state: text })}
+                value={newOrganization.state}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="zipCode"
+                placeholder="Zip Code"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, zipCode: text })}
+                value={newOrganization.zipCode}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="phoneNumber"
+                placeholder="Phone Number"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, phoneNumber: text })}
+                value={newOrganization.phoneNumber}
+                style={{ marginBottom: 20 }}
+              />
+              <Input
+                name="email"
+                placeholder="Email"
+                onChangeText={(text) => setNewOrganization({ ...newOrganization, email: text })}
+                value={newOrganization.email}
+                style={{ marginBottom: 20 }}
+              />
+              <Button
+                buttonStyle={[styles.submitWorkout, { width: 150 }]}
+                title="Submit Organization"
+                onPress={createOrganization}
+              />
+              <Button
+                buttonStyle={[styles.cancelWorkout, { width: 150 }]}
+                title="Cancel"
+                onPress={closeCreateOrganizationModal}
               />
             </View>
           </ScrollView>
@@ -507,8 +628,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   logOutButton: {
-    backgroundColor: "#e74c3c",
-    borderColor: "#e74c3c",
+    backgroundColor: "#778899",
+    borderColor: "#778899",
     marginLeft: 5,
   },
   searchContainer: {
@@ -571,7 +692,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 20,
-    color: "#2ecc71",
+    color: "#2f4f4f",
   },
   setRepContainer: {
     flexDirection: "row",
@@ -607,12 +728,15 @@ const styles = StyleSheet.create({
     marginLeft: 250,
     justifyContent: 'center',
     alignItems: 'center',
+
+  
   },
   cancelWorkout: {
     marginTop: 10,
     marginLeft: 250,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'#808080',
   },
   patientDropdown: {
     height: 50,
@@ -629,12 +753,16 @@ const styles = StyleSheet.create({
     marginLeft: 250,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: "#7DCEA0",
+    borderColor: "#DAF7A6",
+    borderWidth: 2,
   },
   cancelWorkout: {
     marginTop: 10,
     marginLeft: 250,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor:'#808080',
   },
   headline: {
     fontSize: 24,
@@ -644,5 +772,19 @@ const styles = StyleSheet.create({
     marginLeft: 250,
     color: "#3498db",
   },
+  createWorkoutButton: {
+    backgroundColor: "#bdb76b",
+    borderColor: "#3498db",
+    marginLeft: 5,
+    marginRight: 5, 
+    
+  },
+  createOrganizationButton: {
+    backgroundColor: "#bc8f8f",
+    borderColor: "#3498db",
+    marginLeft: 5,
+    marginRight: 5,
+  },
+  
  
 });

@@ -95,8 +95,7 @@ const HomeTabNavigator = () => {
 
             if (route.name === "Home") {
             iconName = "md-home-outline";
-        
-            } else if (route.name === "Diet") {
+            } else if (route.name === "Organizaitons") {
             iconName = "fitness-outline";
             } else if (route.name === "Profile") {
             iconName = "person-circle-outline";
@@ -104,8 +103,8 @@ const HomeTabNavigator = () => {
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: "#216afc",
-          tabBarInactiveTintColor: "gray",
+          tabBarActiveTintColor: "black",
+          tabBarInactiveTintColor: "white",
           headerShown: false,
         })}
       >
@@ -115,20 +114,20 @@ const HomeTabNavigator = () => {
           options={{ 
             headerShown: false, 
             tabBarStyle: {
-              backgroundColor: 'green ',
+              backgroundColor: '#5f9ea0',
             },
           }}
         />
     
-        <Tab.Screen name="Healthy Life" component={DietScreen} />
+        <Tab.Screen name="Organizaitons" component={OrganizationListScreen} />
         <Tab.Screen
-          name="HealthyLife"
-          component={DietScreen}
+          name="Profile"
+          component={ProfileScreen}
           options={{
             headerShown: false,
             headerTitleAlign: "center",
             tabBarStyle: {
-              backgroundColor: 'green',
+              backgroundColor: '#5f9ea0',
             },
           }}
         />
@@ -145,15 +144,15 @@ const HomeTabNavigator = () => {
 
             if (route.name === "Home") {
             iconName = "md-home-outline";
-            } else if (route.name === "Diet") {
+            } else if (route.name === "Organizaitons") {
             iconName = "fitness-outline";
-            } else if (route.name === "Profile") {
+            } else if (route.name === "DoctorProfile") {
             iconName = "person-circle-outline";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
-          tabBarActiveTintColor: "white",
+          tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "white",
           headerShown: false,
         })}
@@ -169,7 +168,18 @@ const HomeTabNavigator = () => {
           }}
         />
     
-        <Tab.Screen name="Organizaitons" component={OrganizationListScreen} />
+        <Tab.Screen name="Organizaitons"
+         component={OrganizationListScreen} 
+         options={{
+          headerShown: false,
+          headerTitleAlign: "center",
+          tabBarStyle: {
+            backgroundColor: '#5f9ea0',
+          },
+        }}
+         
+         
+        />
         <Tab.Screen
         name="DoctorProfile"
         component={DoctorProfileScreen}

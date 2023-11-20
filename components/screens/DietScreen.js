@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 function DietScreen({ navigation }) {
   const goBack = () => {
-    navigation.goBack(); // Navigate back to the previous screen
+    navigation.goBack(); 
   };
 
   return (

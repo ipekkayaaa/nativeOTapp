@@ -79,9 +79,9 @@ const WorkoutScreen = ({ route }) => {
       </TouchableOpacity>
       <View style={styles.tableContainer}>
         <View style={styles.tableRow}>
-          <Text style={styles.tableCellHeader}>Exercise Name</Text>
-          <Text style={styles.tableCellHeader}>Set</Text>
-          <Text style={styles.tableCellHeader}>Rep</Text>
+          <Text style={[styles.tableCell, styles.tableCellHeader]}>Exercise Name</Text>
+          <Text style={[styles.tableCell, styles.tableCellHeader]}>Set</Text>
+          <Text style={[styles.tableCell, styles.tableCellHeader]}>Rep</Text>
         </View>
         {workoutDetails.exercises.map((exercise, index) => (
           <View style={styles.tableRow} key={index}>
@@ -149,6 +149,12 @@ const styles = StyleSheet.create({
   closeButton: {
     fontSize: 16,
     color: "blue",
+  },
+  tableCellHeader: {
+    flex: 1,
+    padding: 15,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

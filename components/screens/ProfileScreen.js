@@ -224,16 +224,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   changePictureButton: {
-    backgroundColor: "#4CAF50",
-    borderColor: "#4CAF50",
+    backgroundColor: "#778899",
+    borderColor: "#3498db",
+    marginRight: 5,
   },
   editProfileButton: {
-    backgroundColor: "#2196F3",
-    borderColor: "#2196F3",
+    backgroundColor: "#8fbc8f",
+    borderColor: "#27ae60",
+    marginLeft: 5,
+    marginRight: 5,
   },
   logOutButton: {
-    backgroundColor: "#F44336",
-    borderColor: "#F44336",
+    backgroundColor: "#cd5c5c",
+    borderColor: "#3498db",
+    marginLeft: 5,
   },
   tableContainer: {
     backgroundColor: "#FFFFFF",

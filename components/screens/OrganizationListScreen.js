@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity } from "react-native"; // Remove the duplicate import
 import { SearchBar } from "react-native-elements";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../../firebase";
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
+
 
 export default function OrganizationListScreen({ navigation }) {
   const [search, setSearch] = useState("");
@@ -40,29 +43,21 @@ export default function OrganizationListScreen({ navigation }) {
     fetchOrganizations();
   }, []);
 
-  const searchFilterFunction = (text) => {
-    if (text) {
-      const newData = organizationList.filter(function (item) {
-        const itemData = item.organizationName
-          ? item.organizationName.toUpperCase()
-          : "".toUpperCase();
-        const textData = text.toUpperCase();
-        return itemData.indexOf(textData) > -1;
-      });
-      setFilteredDataSource(newData);
-      setSearch(text);
-    } else {
-      setFilteredDataSource(organizationList);
-      setSearch(text);
-    }
-  };
-
   const handleOrganizationPress = (organizationId) => {
     navigation.navigate("OrganizationInfoScreen", { organizationId });
   };
 
+
+  const goBack = () => {
+    navigation.goBack(); 
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <TouchableOpacity onPress={goBack} style={styles.goBackButton}>
+        <Ionicons name="ios-arrow-back" size={24} color="blue" />
+        <Text style={styles.goBackText}>Go Back</Text>
+      </TouchableOpacity>
       <Text style={styles.textHeader}>Organizations</Text>
       <SearchBar
         round
@@ -105,7 +100,6 @@ export default function OrganizationListScreen({ navigation }) {
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -113,11 +107,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#F4F4F4",
     paddingTop: 20,
   },
+  
   textHeader: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#333333",
     marginBottom: 10,
+  },
+  goBackButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 1300,
+  },
+  goBackText: {
+    fontSize: 16,
+    color: "blue",
+    marginLeft: 5,
   },
   searchContainer: {
     width: "80%",
@@ -147,9 +152,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333333",
   },
-  link: {
-    // Add styles for the link if needed
-  },
+  
   linkTitle: {
     fontSize: 16,
     color: "#2196F3",
@@ -160,4 +163,5 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 10,
   },
+
 });

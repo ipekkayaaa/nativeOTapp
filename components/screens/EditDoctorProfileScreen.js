@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Picker } from "react-native";
 import { collection, getDocs, addDoc, where, query, updateDoc, doc } from "firebase/firestore";
 import { firestore, auth } from "../../firebase";
 
@@ -7,10 +7,13 @@ export default function EditProfileScreen({ navigation }) {
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
+    title: "",
     birthday: "",
     phoneNumber: "",
     organization: "",
   });
+
+  const [organizationList, setOrganizationList] = useState([]);
 
   const user = auth.currentUser;
 
@@ -23,6 +26,7 @@ export default function EditProfileScreen({ navigation }) {
         .then((querySnapshot) => {
           if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
+            setValues(userData);
           }
         })
         .catch((error) => {
@@ -30,6 +34,25 @@ export default function EditProfileScreen({ navigation }) {
         });
     }
   }, [user, colRefProfile]);
+
+  useEffect(() => {
+    const fetchOrganizations = async () => {
+      try {
+        const organizationsCollection = collection(firestore, "organizations");
+        const snapshot = await getDocs(organizationsCollection);
+        const organizationsData = snapshot.docs.map((doc) => {
+          const { organizationName } = doc.data();
+          return { id: doc.id, organizationName };
+        });
+
+        setOrganizationList(organizationsData);
+      } catch (error) {
+        console.error("Error getting organizations: ", error);
+      }
+    };
+
+    fetchOrganizations();
+  }, []);
 
   const handleChangeText = (key, text) => {
     setValues((prevValues) => ({
@@ -48,6 +71,7 @@ export default function EditProfileScreen({ navigation }) {
           updateDoc(userDocRef, {
             firstName: values.firstName,
             lastName: values.lastName,
+            title: values.title,
             birthday: values.birthday,
             phoneNumber: values.phoneNumber,
             organization: values.organization,
@@ -64,6 +88,7 @@ export default function EditProfileScreen({ navigation }) {
             userId: user.uid,
             firstName: values.firstName,
             lastName: values.lastName,
+            title: values.title,
             birthday: values.birthday,
             phoneNumber: values.phoneNumber,
             organization: values.organization,
@@ -104,6 +129,13 @@ export default function EditProfileScreen({ navigation }) {
         onChangeText={(text) => handleChangeText("lastName", text)}
       />
       <TextInput
+        name="title"
+        style={styles.input}
+        placeholder="Title"
+        value={values.title}
+        onChangeText={(text) => handleChangeText("title", text)}
+      />
+      <TextInput
         placeholder="Birthday"
         style={styles.input}
         value={values.birthday}
@@ -116,14 +148,17 @@ export default function EditProfileScreen({ navigation }) {
         value={values.phoneNumber}
         onChangeText={(text) => handleChangeText("phoneNumber", text)}
       />
-      <TextInput
-        name="organization"
+      <Picker
+        selectedValue={values.organization}
+        onValueChange={(value) => handleChangeText("organization", value)}
         style={styles.input}
-        placeholder="Organization"
-        value={values.weight}
-        onChangeText={(text) => handleChangeText("organization", text)}
-      />
-       <TouchableOpacity
+      >
+        <Picker.Item label="Select Organization" value="" />
+        {organizationList.map((org) => (
+          <Picker.Item key={org.id} label={org.organizationName} value={org.id} />
+        ))}
+      </Picker>
+      <TouchableOpacity
         style={styles.button}
         onPress={handleSaveProfile}
       >
@@ -154,7 +189,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   input: {
-    width: "100%",
+    width: "80%",
     height: 40,
     borderColor: "#C5C2B7",
     borderWidth: 1,
@@ -162,23 +197,28 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
   },
+
   button: {
     backgroundColor: "#38362d",
     justifyContent: "center",
     alignItems: "center",
-    width: "40%",
+    width: "30%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    backgroundColor: "#7DCEA0",
+    borderColor: "#DAF7A6",
+    borderWidth: 2,
   },
   cancelButton: {
-    backgroundColor: "#999",
+    backgroundColor: "#808080",
     justifyContent: "center",
     alignItems: "center",
     width: "40%",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    width: "30%",
   },
   buttonText: {
     color: "#fff",
